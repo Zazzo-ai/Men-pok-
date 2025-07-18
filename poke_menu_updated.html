@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea il tuo Poké</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .price {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-section {
+            padding: 30px;
+        }
+
+        .customer-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        .poke-container {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .poke-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .poke-title {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .remove-poke {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-poke:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .poke-content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            border-radius: 2px;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+        }
+
+        .option-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .option-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .option-item input[type="radio"] {
+            display: none;
+        }
+
+        .option-item label {
+            display: block;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .option-item input:checked + label {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .option-item input:checked + label::before {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 16px;
+            color: #4CAF50;
+            background: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .add-poke-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .add-poke-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .order-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .order-summary h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .total-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥙 Crea il tuo Poké</h1>
+            <div class="price">€ 13,00 cadauno</div>
+        </div>
+
+        <div class="form-section">
+            <div class="info-box">
+                <h3>📍 Ritiro in sede</h3>
+                <p>Via Cavour 54 - Componi liberamente i tuoi poké!</p>
+            </div>
+
+            <form id="orderForm">
+                <div class="customer-info">
+                    <div class="input-group">
+                        <label for="customerName">Nome <span class="required">*</span></label>
+                        <input type="text" id="customerName" name="customerName" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="customerPhone">Numero di telefono <span class="required">*</span></label>
+                            <input type="tel" id="customerPhone" name="customerPhone" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="pickupTime">Orario di ritiro <span class="required">*</span></label>
+                            <input type="time" id="pickupTime" name="pickupTime" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pokesContainer"></div>
+
+                <button type="button" class="add-poke-btn" id="addPokeBtn">
+                    ➕ Aggiungi Poké
+                </button>
+
+                <div class="order-summary" id="orderSummary" style="display: none;">
+                    <h3>📋 Riepilogo Ordine</h3>
+                    <div id="summaryContent"></div>
+                    <div class="total-price" id="totalPrice">Totale: €0,00</div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                    📱 Invia ordine via WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let pokeCount = 0;
+        let pokes = [];
+
+        function createPokeForm(index) {
+            return `
+                <div class="poke-container" data-poke-index="${index}">
+                    <div class="poke-header">
+                        <div class="poke-title">🥙 Poké #${index + 1}</div>
+                        <button type="button" class="remove-poke" onclick="removePoke(${index})">
+                            ❌ Rimuovi
+                        </button>
+                    </div>
+                    <div class="poke-content">
+                        <div class="section-title">🐟 Scegli le proteine</div>
+                        <div class="option-grid">
+                            <div class="option-item">
+                                <input type="checkbox" id="salmone-crudo-${index}" name="proteine-${index}" value="Salmone crudo">
+                                <label for="salmone-crudo-${index}">Salmone crudo</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="salmone-scottato-${index}" name="proteine-${index}" value="Salmone scottato">
+                                <label for="salmone-scottato-${index}">Salmone scottato</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="tonno-crudo-${index}" name="proteine-${index}" value="Tonno crudo">
+                                <label for="tonno-crudo-${index}">Tonno crudo</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="tonno-scottato-${index}" name="proteine-${index}" value="Tonno scottato">
+                                <label for="tonno-scottato-${index}">Tonno scottato</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="gambero-fritto-${index}" name="proteine-${index}" value="Gambero fritto">
+                                <label for="gambero-fritto-${index}">Gambero fritto</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="gambero-bollito-${index}" name="proteine-${index}" value="Gambero bollito">
+                                <label for="gambero-bollito-${index}">Gambero bollito</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="pollo-fritto-${index}" name="proteine-${index}" value="Pollo fritto">
+                                <label for="pollo-fritto-${index}">Pollo fritto</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="pollo-grigliato-${index}" name="proteine-${index}" value="Pollo grigliato">
+                                <label for="pollo-grigliato-${index}">Pollo grigliato</label>
+                            </div>
+                        </div>
+
+                        <div class="section-title">🥗 Scegli i condimenti</div>
+                        <div class="option-grid">
+                            <div class="option-item">
+                                <input type="checkbox" id="alga-wakame-${index}" name="condimenti-${index}" value="Alga wakame">
+                                <label for="alga-wakame-${index}">Alga wakame</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="edamame-${index}" name="condimenti-${index}" value="Edamame">
+                                <label for="edamame-${index}">Edamame</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="avocado-${index}" name="condimenti-${index}" value="Avocado">
+                                <label for="avocado-${index}">Avocado</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="mango-${index}" name="condimenti-${index}" value="Mango">
+                                <label for="mango-${index}">Mango</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="filadelfia-${index}" name="condimenti-${index}" value="Filadelfia">
+                                <label for="filadelfia-${index}">Filadelfia</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="pomodoro-${index}" name="condimenti-${index}" value="Pomodoro">
+                                <label for="pomodoro-${index}">Pomodoro</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="lattuga-${index}" name="condimenti-${index}" value="Lattuga">
+                                <label for="lattuga-${index}">Lattuga</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="mais-${index}" name="condimenti-${index}" value="Mais">
+                                <label for="mais-${index}">Mais</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="mais-tostato-${index}" name="condimenti-${index}" value="Mais tostato">
+                                <label for="mais-tostato-${index}">Mais tostato</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="mandorla-${index}" name="condimenti-${index}" value="Mandorla">
+                                <label for="mandorla-${index}">Mandorla</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="cipolla-croccante-${index}" name="condimenti-${index}" value="Cipolla croccante">
+                                <label for="cipolla-croccante-${index}">Cipolla croccante</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="sesamo-${index}" name="condimenti-${index}" value="Sesamo">
+                                <label for="sesamo-${index}">Sesamo</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="carote-julienne-${index}" name="condimenti-${index}" value="Carote julienne">
+                                <label for="carote-julienne-${index}">Carote julienne</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="cetrioli-${index}" name="condimenti-${index}" value="Cetrioli">
+                                <label for="cetrioli-${index}">Cetrioli</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="uova-sode-${index}" name="condimenti-${index}" value="Uova sode">
+                                <label for="uova-sode-${index}">Uova sode</label>
+                            </div>
+                        </div>
+
+                        <div class="section-title">🍯 Scegli le salse</div>
+                        <div class="option-grid">
+                            <div class="option-item">
+                                <input type="checkbox" id="maionese-giapponese-${index}" name="salse-${index}" value="Maionese giapponese">
+                                <label for="maionese-giapponese-${index}">Maionese giapponese</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="maionese-piccante-${index}" name="salse-${index}" value="Maionese piccante">
+                                <label for="maionese-piccante-${index}">Maionese piccante</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="salsa-agropiccante-${index}" name="salse-${index}" value="Salsa agropiccante">
+                                <label for="salsa-agropiccante-${index}">Salsa agropiccante</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="salsa-soia-${index}" name="salse-${index}" value="Salsa di soia">
+                                <label for="salsa-soia-${index}">Salsa di soia</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="salsa-yogurt-${index}" name="salse-${index}" value="Salsa yogurt">
+                                <label for="salsa-yogurt-${index}">Salsa yogurt</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="salsa-teriyaki-${index}" name="salse-${index}" value="Salsa teriyaki">
+                                <label for="salsa-teriyaki-${index}">Salsa teriyaki</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addPoke() {
+            const container = document.getElementById('pokesContainer');
+            const pokeHTML = createPokeForm(pokeCount);
+            container.insertAdjacentHTML('beforeend', pokeHTML);
+            
+            pokes.push({
+                index: pokeCount,
+                proteina: null,
+                condimenti: [],
+                salse: []
+            });
+            
+            pokeCount++;
+            updateOrderSummary();
+            
+            // Aggiungi event listeners per il nuovo poké
+            const newPokeContainer = container.lastElementChild;
+            addEventListeners(newPokeContainer, pokeCount - 1);
+        }
+
+        function removePoke(index) {
+            const pokeContainer = document.querySelector(`[data-poke-index="${index}"]`);
+            if (pokeContainer) {
+                pokeContainer.remove();
+                pokes = pokes.filter(poke => poke.index !== index);
+                updateOrderSummary();
+            }
+        }
+
+        function addEventListeners(container, index) {
+            // Proteine
+            const proteineInputs = container.querySelectorAll(`input[name="proteine-${index}"]`);
+            proteineInputs.forEach(input => {
+                input.addEventListener('change', () => updateOrderSummary());
+            });
+
+            // Condimenti
+            const condimentiInputs = container.querySelectorAll(`input[name="condimenti-${index}"]`);
+            condimentiInputs.forEach(input => {
+                input.addEventListener('change', () => updateOrderSummary());
+            });
+
+            // Salse
+            const salseInputs = container.querySelectorAll(`input[name="salse-${index}"]`);
+            salseInputs.forEach(input => {
+                input.addEventListener('change', () => updateOrderSummary());
+            });
+        }
+
+        function updateOrderSummary() {
+            const pokesInDOM = document.querySelectorAll('.poke-container');
+            const summaryContent = document.getElementById('summaryContent');
+            const totalPrice = document.getElementById('totalPrice');
+            const orderSummary = document.getElementById('orderSummary');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (pokesInDOM.length === 0) {
+                orderSummary.style.display = 'none';
+                submitBtn.disabled = true;
+                return;
+            }
+
+            let summaryHTML = '';
+            let validPokes = 0;
+
+            pokesInDOM.forEach((container, i) => {
+                const index = parseInt(container.getAttribute('data-poke-index'));
+                const proteine = Array.from(container.querySelectorAll(`input[name="proteine-${index}"]:checked`))
+                    .map(cb => cb.value);
+                
+                if (proteine.length > 0) {
+                    validPokes++;
+                    summaryHTML += `<div><strong>Poké #${i + 1}:</strong> ${proteine.join(', ')}</div>`;
+                }
+            });
+
+            summaryContent.innerHTML = summaryHTML;
+            totalPrice.textContent = `Totale: €${(validPokes * 13).toFixed(2)}`;
+            
+            orderSummary.style.display = validPokes > 0 ? 'block' : 'none';
+            submitBtn.disabled = validPokes === 0;
+        }
+
+        // Aggiungi il primo poké automaticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            addPoke();
+        });
+
+        // Event listener per aggiungere poké
+        document.getElementById('addPokeBtn').addEventListener('click', addPoke);
+
+        // Event listener per l'invio dell'ordine
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('customerName').value;
+            const telefono = document.getElementById('customerPhone').value;
+            const orarioRitiro = document.getElementById('pickupTime').value;
+            
+            if (!nome || !telefono || !orarioRitiro) {
+                alert('Per favore completa tutti i campi richiesti');
+                return;
+            }
+
+            const pokesInDOM = document.querySelectorAll('.poke-container');
+            let validPokes = [];
+
+            pokesInDOM.forEach((container, i) => {
+                const index = parseInt(container.getAttribute('data-poke-index'));
+                const proteine = Array.from(container.querySelectorAll(`input[name="proteine-${index}"]:checked`))
+                    .map(cb => cb.value);
+                
+                if (proteine.length > 0) {
+                    const condimenti = Array.from(container.querySelectorAll(`input[name="condimenti-${index}"]:checked`))
+                        .map(cb => cb.value);
+                    const salse = Array.from(container.querySelectorAll(`input[name="salse-${index}"]:checked`))
+                        .map(cb => cb.value);
+                    
+                    validPokes.push({
+                        numero: i + 1,
+                        proteine: proteine,
+                        condimenti: condimenti,
+                        salse: salse
+                    });
+                }
+            });
+
+            if (validPokes.length === 0) {
+                alert('Per favore seleziona almeno una proteina per un poké');
+                return;
+            }
+
+            // Costruisci il messaggio
+            let messaggio = `🥙 *NUOVO ORDINE POKÉ* 🥙\n\n`;
+            messaggio += `👤 *Cliente:* ${nome}\n`;
+            messaggio += `📞 *Telefono:* ${telefono}\n`;
+            messaggio += `🕐 *Orario ritiro:* ${orarioRitiro}\n\n`;
+            
+            validPokes.forEach(poke => {
+                messaggio += `🥙 *POKÉ #${poke.numero}*\n`;
+                messaggio += `🐟 *Proteine:* ${poke.proteine.join(', ')}\n`;
+                
+                if (poke.condimenti.length > 0) {
+                    messaggio += `🥗 *Condimenti:* ${poke.condimenti.join(', ')}\n`;
+                }
+                
+                if (poke.salse.length > 0) {
+                    messaggio += `🍯 *Salse:* ${poke.salse.join(', ')}\n`;
+                }
+                
+                messaggio += `\n`;
+            });
+            
+            messaggio += `💰 *Totale:* €${(validPokes.length * 13).toFixed(2)}\n`;
+            messaggio += `📍 *Ritiro:* Via Cavour 54`;
+            
+            // Crea link WhatsApp
+            const numeroWhatsApp = '3466198549';
+            const messaggioCodificato = encodeURIComponent(messaggio);
+            const linkWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${messaggioCodificato}`;
+            
+            // Apri WhatsApp
+            window.open(linkWhatsApp, '_blank');
+        });
+    </script>
+</body>
+</html>
